@@ -3,8 +3,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
-
 function RegisterPage() {
   const navigate = useNavigate();
   
@@ -40,7 +38,7 @@ function RegisterPage() {
       setLoading(true);
       
       // 1. Call Backend to Send OTP
-      const res = await axios.post(`${API_URL}/api/auth/send-otp`, { 
+      const res = await axios.post('http://localhost:5000/api/auth/send-otp', { 
         email: formData.email 
       });
 
@@ -59,12 +57,18 @@ function RegisterPage() {
   const handleVerifyAndRegister = async () => {
     try {
       setLoading(true);
+      setError(''); // Clear any previous errors
       
-      const res = await axios.post(`${API_URL}/api/auth/register`, {
+      // Trim the OTP to remove any whitespace
+      const trimmedOtp = otp.trim();
+      
+      console.log("Sending OTP for verification:", trimmedOtp);
+      
+      const res = await axios.post('http://localhost:5000/api/auth/register', {
         name: formData.name,
         email: formData.email,
         password: formData.password,
-        otp: otp 
+        otp: trimmedOtp 
       });
 
       console.log("Registration Success:", res.data);
@@ -72,6 +76,7 @@ function RegisterPage() {
       navigate('/login'); 
 
     } catch (err) {
+      console.error("Verification Error:", err.response?.data);
       setError(err.response?.data?.message || "Invalid OTP. Please try again.");
     } finally {
       setLoading(false);
@@ -159,20 +164,44 @@ function RegisterPage() {
                     <h3 className="text-2xl font-bold text-gray-800 mb-2">Verification Code</h3>
                     <p className="text-gray-500 text-sm mb-6">We sent a code to <span className="font-bold text-purple-600">{formData.email}</span></p>
 
+                    {error && (
+                      <div className="alert alert-error shadow-lg mb-4 rounded-lg text-sm py-2 bg-red-50 text-red-600 border border-red-200 px-3">
+                        <span>{error}</span>
+                      </div>
+                    )}
+
                     <input 
                         type="text" 
                         placeholder="Enter Code" 
                         className="input input-bordered w-full text-center text-xl tracking-widest font-bold mb-6 focus:border-pink-500 focus:ring-pink-500"
                         maxLength="6"
                         value={otp}
-                        onChange={(e) => setOtp(e.target.value)}
+                        onChange={(e) => {
+                          setOtp(e.target.value);
+                          if (error) setError(''); // Clear error when user types
+                        }}
                     />
 
-                    <button onClick={handleVerifyAndRegister} disabled={loading || otp.length < 4} className="btn w-full btn-primary bg-gradient-to-r from-purple-500 to-pink-500 text-white border-none rounded-xl font-bold">
+                    <button 
+                        type="button"
+                        onClick={handleVerifyAndRegister} 
+                        disabled={loading || otp.length < 4} 
+                        className="btn w-full btn-primary bg-gradient-to-r from-purple-500 to-pink-500 text-white border-none rounded-xl font-bold disabled:opacity-50"
+                    >
                         {loading ? "Verifying..." : "Confirm & Create Account"}
                     </button>
                     
-                    <button onClick={() => setShowOtpModal(false)} className="btn btn-ghost btn-sm mt-4 text-gray-400">Cancel</button>
+                    <button 
+                        type="button"
+                        onClick={() => {
+                          setShowOtpModal(false);
+                          setError('');
+                          setOtp('');
+                        }} 
+                        className="btn btn-ghost btn-sm mt-4 text-gray-400"
+                    >
+                        Cancel
+                    </button>
                 </motion.div>
             </div>
         )}
