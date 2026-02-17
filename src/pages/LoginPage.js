@@ -4,6 +4,8 @@ import { motion } from 'framer-motion';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext'; // Import Auth Context
 
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+
 function LoginPage() {
   const navigate = useNavigate();
   const { login } = useAuth(); // Get the login function from context
@@ -29,7 +31,7 @@ function LoginPage() {
 
     try {
       // 1. Call Backend Login API
-      const res = await axios.post('http://localhost:5000/api/auth/login', {
+      const res = await axios.post(`${API_URL}/api/auth/login`, {
         email: formData.email,
         password: formData.password
       });

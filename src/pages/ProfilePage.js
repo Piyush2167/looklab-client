@@ -4,6 +4,8 @@ import axios from 'axios';
 import { useAuth } from '../context/AuthContext'; 
 import { useNavigate } from 'react-router-dom';
 
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+
 // --- CUSTOM NOTIFICATION COMPONENT (Floating Toast) ---
 const Notification = ({ message, type, onClose }) => {
   useEffect(() => {
@@ -62,11 +64,11 @@ function ProfilePage() {
     const fetchData = async () => {
       try {
         const userId = authUser.id || authUser._id;
-        const profileRes = await axios.get(`http://localhost:5000/api/user/${userId}`);
+        const profileRes = await axios.get(`${API_URL}/api/user/${userId}`);
         setUserProfile(profileRes.data);
-        const ledgerRes = await axios.get(`http://localhost:5000/api/user/${userId}/ledger`);
+        const ledgerRes = await axios.get(`${API_URL}/api/user/${userId}/ledger`);
         setLedger(ledgerRes.data);
-        const galleryRes = await axios.get(`http://localhost:5000/api/user/${userId}/gallery`);
+        const galleryRes = await axios.get(`${API_URL}/api/user/${userId}/gallery`);
         setGallery(galleryRes.data);
       } catch (error) {
         console.error("Error loading profile data:", error);
@@ -111,7 +113,7 @@ function ProfilePage() {
 
     try {
         const userId = authUser.id || authUser._id;
-        const res = await axios.put(`http://localhost:5000/api/user/${userId}`, formData, {
+        const res = await axios.put(`${API_URL}/api/user/${userId}`, formData, {
             headers: { 'Content-Type': 'multipart/form-data' }
         });
 
@@ -145,7 +147,7 @@ function ProfilePage() {
             return;
         }
 
-        const orderRes = await axios.post("http://localhost:5000/api/bookings/create-order", {
+        const orderRes = await axios.post(`${API_URL}/api/bookings/create-order`, {
             amount: balanceAmount
         });
 
@@ -171,7 +173,7 @@ function ProfilePage() {
             },
             handler: async function (response) {
                 try {
-                    const verifyRes = await axios.post("http://localhost:5000/api/bookings/confirm-balance", {
+                    const verifyRes = await axios.post(`${API_URL}/api/bookings/confirm-balance`, {
                         razorpay_order_id: response.razorpay_order_id,
                         razorpay_payment_id: response.razorpay_payment_id,
                         razorpay_signature: response.razorpay_signature,

@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
 
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+
 // --- CUSTOM NOTIFICATION COMPONENT ---
 const Notification = ({ message, type, onClose }) => {
   useEffect(() => {
@@ -43,9 +45,9 @@ function AdminPage() {
   // --- FETCH DATA ---
   const fetchData = async () => {
     try {
-      const bookingsRes = await axios.get('http://localhost:5000/api/admin/bookings');
+      const bookingsRes = await axios.get(`${API_URL}/api/admin/bookings`);
       setBookings(bookingsRes.data);
-      const servicesRes = await axios.get('http://localhost:5000/api/services');
+      const servicesRes = await axios.get(`${API_URL}/api/services`);
       setServices(servicesRes.data);
       setLoading(false);
     } catch (error) {
@@ -83,7 +85,7 @@ function AdminPage() {
   const handleMarkComplete = async (id) => {
     if (!window.confirm("Is the service done? This will allow the client to pay the balance.")) return;
     try {
-      await axios.put(`http://localhost:5000/api/bookings/${id}/status`, { status: "Service Done" });
+      await axios.put(`${API_URL}/api/bookings/${id}/status`, { status: "Service Done" });
       showToast("Service Marked Done! Payment unlocked.");
       fetchData(); 
     } catch (err) {
@@ -107,7 +109,7 @@ function AdminPage() {
   const handleDeleteService = async (id) => {
       if(!window.confirm("Are you sure you want to delete this service?")) return;
       try {
-          await axios.delete(`http://localhost:5000/api/services/${id}`);
+          await axios.delete(`${API_URL}/api/services/${id}`);
           showToast("Service Deleted Successfully");
           fetchData();
       } catch (err) { showToast("Failed to delete service", "error"); }
@@ -118,11 +120,11 @@ function AdminPage() {
       try {
           if (editingService) {
               // Edit Mode
-              await axios.put(`http://localhost:5000/api/services/${editingService._id}`, serviceForm);
+              await axios.put(`${API_URL}/api/services/${editingService._id}`, serviceForm);
               showToast("Service Updated!");
           } else {
               // Add Mode
-              await axios.post(`http://localhost:5000/api/services`, serviceForm);
+              await axios.post(`${API_URL}/api/services`, serviceForm);
               showToast("New Service Added!");
           }
           setIsServiceModalOpen(false);

@@ -3,6 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
 
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+
 function RegisterPage() {
   const navigate = useNavigate();
   
@@ -38,7 +40,7 @@ function RegisterPage() {
       setLoading(true);
       
       // 1. Call Backend to Send OTP
-      const res = await axios.post('http://localhost:5000/api/auth/send-otp', { 
+      const res = await axios.post(`${API_URL}/api/auth/send-otp`, { 
         email: formData.email 
       });
 
@@ -58,7 +60,7 @@ function RegisterPage() {
     try {
       setLoading(true);
       
-      const res = await axios.post('http://localhost:5000/api/auth/register', {
+      const res = await axios.post(`${API_URL}/api/auth/register`, {
         name: formData.name,
         email: formData.email,
         password: formData.password,

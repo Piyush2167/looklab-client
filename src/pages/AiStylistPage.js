@@ -5,6 +5,8 @@ import { useAuth } from "../context/AuthContext"; // <--- ADDED
 import GeminiService from "../services/geminiService";
 // import GeminiTest from "../components/GeminiTest";
 
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+
 function AIStylistPage() {
   // =========================
   // STATE
@@ -40,7 +42,7 @@ function AIStylistPage() {
   useEffect(() => {
     const fetchStyles = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/styles");
+        const res = await fetch(`${API_URL}/api/styles`);
         const data = await res.json();
         setStyles(data);
       } catch (err) {
@@ -75,11 +77,11 @@ function AIStylistPage() {
       // Ensure we have a full URL
       const imagePath = generatedImage.startsWith('http') 
         ? generatedImage 
-        : `http://localhost:5000${generatedImage}`;
+        : `${API_URL}${generatedImage}`;
 
       const userId = user.id || user._id;
 
-      await axios.post(`http://localhost:5000/api/user/${userId}/gallery`, {
+      await axios.post(`${API_URL}/api/user/${userId}/gallery`, {
         imageUrl: imagePath,
         name: selectedStyle.name || "AI Style"
       });
@@ -500,7 +502,7 @@ function AIStylistPage() {
                       {/* Generated Image */}
                       <div className="w-full md:w-1/2 h-48 md:h-full relative rounded-3xl overflow-hidden shadow-lg border border-white/20">
                         <img 
-                          src={`http://localhost:5000${generatedImage}`} 
+                          src={`${API_URL}${generatedImage}`} 
                           alt="AI Generated Hairstyle" 
                           className="w-full h-full object-cover" 
                         />

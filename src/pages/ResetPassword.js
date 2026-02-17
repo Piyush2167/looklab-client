@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+
 function ResetPassword() {
   const { token } = useParams(); // Get token from URL
   const navigate = useNavigate();
@@ -14,7 +16,7 @@ function ResetPassword() {
     if (password !== confirmPassword) return setMessage("Passwords do not match");
 
     try {
-      await axios.post(`http://localhost:5000/api/auth/reset-password/${token}`, { password });
+      await axios.post(`${API_URL}/api/auth/reset-password/${token}`, { password });
       alert("Password Reset Successfully! Please Login.");
       navigate('/login');
     } catch (err) {

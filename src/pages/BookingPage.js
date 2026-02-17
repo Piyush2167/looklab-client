@@ -6,6 +6,8 @@ import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+
 function BookingPage() {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -32,7 +34,7 @@ function BookingPage() {
   useEffect(() => {
     const fetchServices = async () => {
       try {
-        const res = await axios.get('http://localhost:5000/api/services');
+        const res = await axios.get(`${API_URL}/api/services`);
         setServices(res.data);
       } catch (error) {
         console.error("Error fetching services:", error);
@@ -48,7 +50,7 @@ function BookingPage() {
       setSelectedSlot(null); 
       try {
         const dateString = date.toDateString(); 
-        const res = await axios.get(`http://localhost:5000/api/bookings/slots?date=${dateString}`);
+        const res = await axios.get(`${API_URL}/api/bookings/slots?date=${dateString}`);
         setSlots(res.data);
       } catch (error) {
         console.error("Error fetching slots:", error);
@@ -71,7 +73,7 @@ function BookingPage() {
 
     try {
       // A. Create Razorpay Order
-      const orderRes = await axios.post("http://localhost:5000/api/bookings/create-order", {
+      const orderRes = await axios.post(`${API_URL}/api/bookings/create-order`, {
         amount: advanceAmount
       });
 
@@ -111,7 +113,7 @@ function BookingPage() {
         // --------------------------------
         handler: async function (response) {
           try {
-            const verifyRes = await axios.post("http://localhost:5000/api/bookings/confirm", {
+            const verifyRes = await axios.post(`${API_URL}/api/bookings/confirm`, {
               razorpay_order_id: response.razorpay_order_id,
               razorpay_payment_id: response.razorpay_payment_id,
               razorpay_signature: response.razorpay_signature,
